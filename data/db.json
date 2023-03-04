@@ -1,0 +1,71 @@
+{
+  "user": [
+    {
+      "id": "1",
+      "user": "Keng_WC",
+      "pass": "1234",
+      "todo": [
+        {
+          "id": "2023-02-28T17:48:31.929Z",
+          "topic": "test1",
+          "tags": [],
+          "description": "sada",
+          "createdDate": "2023-02-27T17:48:31.929Z",
+          "dueDate": "2023-03-11T00:00:00.000Z",
+          "board": "Default board",
+          "done": false
+        }
+      ],
+      "board": [
+        "Default board"
+      ]
+    },
+    {
+      "id": "0",
+      "user": "guess",
+      "pass": "1234",
+      "todo": [
+        {
+          "id": "2023-03-02T13:50:45.893Z",
+          "topic": "Test1",
+          "tags": [],
+          "description": "Desc",
+          "createdDate": "2023-03-02T13:50:45.893Z",
+          "dueDate": "2023-03-02T13:50:18.312Z",
+          "board": "Default board",
+          "done": false
+        },
+        {
+          "id": "2023-03-02T21:04:37.556Z",
+          "topic": "Test2",
+          "tags": [
+            "Academia",
+            "Work"
+          ],
+          "description": "",
+          "createdDate": "2023-03-02T21:04:37.556Z",
+          "dueDate": "2023-03-02T21:04:29.446Z",
+          "board": "Default board",
+          "done": false
+        },
+        {
+          "id": "2023-03-02T21:04:46.628Z",
+          "topic": "Test3",
+          "tags": [
+            "Work",
+            "Hobby"
+          ],
+          "description": "",
+          "createdDate": "2023-03-02T21:04:46.628Z",
+          "dueDate": "2023-03-02T21:04:37.557Z",
+          "board": "Default board",
+          "done": false
+        }
+      ],
+      "board": [
+        "Default board",
+        "asfasf"
+      ]
+    }
+  ]
+}
