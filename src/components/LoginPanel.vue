@@ -1,14 +1,13 @@
 <script setup>
-      import { onMounted, onUpdated, ref } from 'vue'
-      const username = ref("")
-      const password = ref("")
-      const emit = defineEmits([
-            "loginUser",
-            "close"
-      ])
-      let user = ref();
-      const tryLogin = () => {
-            fetch(`http://localhost:5000/user?user=${username.value}`)
+import { onMounted, onUpdated, ref } from 'vue'
+const username = ref("")
+const password = ref("")
+const emit = defineEmits([
+      "loginUser",
+      "close"
+])
+const tryLogin = () => {
+      fetch(`http://localhost:3001/user?user=${username.value}`)
             .then(resp => resp.json())
             .then(data => {
                   if (data.length === 0) console.log("This username in not exist")
@@ -23,30 +22,28 @@
                   emit("loginUser", data)
                   emit("close")
             })
-            .catch(() => {console.log("Some requirement is missing")})
-      }
- 
+            .catch(() => { console.log("Some requirement is missing") })
+}
+
 </script>
  
 <template>
-<div class="absolute bg-white lg:h-3/5 lg:w-1/4 px-5 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 rounded-2xl">
-      <h1 class="mt-5 text-4xl font-bold border-b-2 w-11/12 pb-4 mx-auto"> Craete New Account </h1>
-      <div class="form-control">
-            <span class="label-text pb-3 pt-5 text-3xl ">Username</span>
-            <input type="text" class="input input-bordered w-full" v-model="username">
-            <span class="label-text pb-3 pt-5 text-3xl ">PassWord</span>
-            <input type="password" class="input input-bordered w-full" v-model="password">
-            <div class="input-group">
-                  <input type="checkbox" class="checkbox" id="passCheckbox" ref="passCheckbox">
-                  <label for="passCheckbox">Show password</label>
+      <div
+            class="absolute bg-white lg:h-3/5 lg:w-1/4 px-5 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 rounded-2xl">
+            <h1 class="mt-5 text-4xl font-bold border-b-2 w-11/12 pb-4 mx-auto"> Login </h1>
+            <div class="form-control">
+                  <span class="label-text pb-3 pt-5 text-3xl ">Username</span>
+                  <input type="text" class="input input-bordered w-full" v-model="username">
+                  <span class="label-text pb-3 pt-5 text-3xl ">PassWord</span>
+                  <input type="password" class="input input-bordered w-full" v-model="password">
+                  <div class="input-group">
+                        <input type="checkbox" class="checkbox" id="passCheckbox" ref="passCheckbox">
+                        <label for="passCheckbox">Show password</label>
+                  </div>
+
             </div>
-            
-      </div>      
-      <button class="btn" @click="tryLogin">Login</button>
-      {{ user }}
-</div>
+            <button class="btn" @click="tryLogin">Login</button>
+      </div>
 </template>
  
-<style scoped>
-
-</style>
+<style scoped></style>

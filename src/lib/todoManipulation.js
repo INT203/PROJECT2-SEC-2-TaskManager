@@ -3,7 +3,7 @@ function todoManipulation() {
       async function createTodo(user,topic,tags,desc,cdate,ddate,board) {
             topic = topic === null || topic === undefined || topic.trim().length === 0 ? "Non-Topic" : topic
             user.todo.push(new Todo(topic,tags,desc,cdate,ddate,board))
-            return await fetch(`http://localhost:5000/user/${user.id}`,{
+            return await fetch(`http://localhost:3001/user/${user.id}`,{
                   method: "PUT",
                   headers:{
                         "Content-Type" : "application/json"
@@ -13,7 +13,7 @@ function todoManipulation() {
 
       }
       async function readTodo(userID = 0) {
-            return await fetch(`http://localhost:5000/user/${userID}`)
+            return await fetch(`http://localhost:3001/user/${userID}`)
             .then(resp => resp.json())
             .then(data => data.todo)
       }
@@ -32,7 +32,7 @@ function todoManipulation() {
             }else{
                   user.todo[itemIndex].tags = user.todo[itemIndex].tags.filter(tag => tag !== 'Done')
             }
-            await fetch(`http://localhost:5000/user/${user.id}`,{
+            await fetch(`http://localhost:3001/user/${user.id}`,{
                   method: "PUT",
                   headers:{
                         "Content-Type" : "application/json"
@@ -42,7 +42,7 @@ function todoManipulation() {
       }
       async function removeTodoOnDeletedBoard(user , boardName){
             user.todo = user.todo.filter(todo => todo.board != boardName)
-            await fetch(`http://localhost:5000/user/${user.id}`,{
+            await fetch(`http://localhost:3001/user/${user.id}`,{
                   method: "PUT",
                   headers:{
                         "Content-Type" : "application/json"
@@ -53,7 +53,7 @@ function todoManipulation() {
 
       async function removeTodo(user , createdate) {
             user.todo = user.todo.filter(todo => new Date(todo.createdDate).getTime() != new Date(createdate).getTime())
-            await fetch(`http://localhost:5000/user/${user.id}`,{
+            await fetch(`http://localhost:3001/user/${user.id}`,{
                   method: "PUT",
                   headers:{
                         "Content-Type" : "application/json"

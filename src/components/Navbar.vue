@@ -1,9 +1,11 @@
 <script setup>
 import userIcon from './icons/userIcon.vue'
 import { ref, onUpdated } from 'vue';
+import remindIcon from './icons/remindIcon.vue';
 const prop = defineProps({
       boardName: String,
       tags: Array,
+      todoRemind: Object
 })
 const emit = defineEmits([
       "searching",
@@ -41,6 +43,32 @@ onUpdated(() => {
             </div>
             <!-- SEARCH BOX AND FILTER -->
             <div class="navbar-end">
+                  <!-- REMINDER  -->
+                  <div class="dropdown dropdown-hover dropdown-bottom dropdown-end mr-1 top-0.5" :class="todoRemind['Remind'].length !== 0?'avatar online':''" >
+                              <label class="btn btn-ghost btn-circle">
+                              <remindIcon />
+                              </label>
+                              <div tabindex="0" class="dropdown-content card card-compact w-64 p-2 shadow bg-white text-black">
+                                    <div class="card-body ">
+                                          <h3 class="card-title">Reminder [ {{ todoRemind["Remind"].length }} ]</h3>
+                                          <hr>
+                                          <div class="form-control w-full text-sm font-semibold space-y-2">
+                                                <label class="cursor-pointer label hover:bg-gray-300 hover:rounded-md">
+                                                      <span class=" text-left">1 day left ( {{ todoRemind["OneDayLeft"].length }} )</span>
+                                                </label>
+                                                <label class="cursor-pointer label hover:bg-gray-300 hover:rounded-md">
+                                                      <span class=" text-left">2 days left ( {{ todoRemind["TwoDayLeft"].length }} )</span>
+                                                </label>
+                                                <label class="cursor-pointer label hover:bg-gray-300 hover:rounded-md">
+                                                      <span class=" text-left">3 days left ( {{ todoRemind["ThreeDayLeft"].length }} )</span>
+                                                </label>
+                                                <label class="cursor-pointer label hover:bg-gray-300 hover:rounded-md">
+                                                      <span class=" text-left">Late ( {{ todoRemind["Late"].length }} )</span>
+                                                </label>
+                                          </div>
+                                    </div>
+                              </div>
+                  </div>
                   <!-- FILTER : DROP DOWN //FILTER BY TAG(S) -->
                   <div class="dropdown dropdown-left btn btn-ghost btn-circle mr-1">
                         <label tabindex="0">
