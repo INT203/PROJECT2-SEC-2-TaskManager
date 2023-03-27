@@ -1,11 +1,11 @@
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, RouterLink } from 'vue-router'
 const router = useRouter()
 const username = ref("")
 const password = ref("")
 const emit = defineEmits([
-    "loginUser"
+    "loginUser",
 ])
 const tryLogin = () => {
   fetch(`http://localhost:3001/user?user=${username.value}`)
@@ -50,7 +50,11 @@ const tryLogin = () => {
                 </div>
 
             </div>
-            <button class="btn" @click="tryLogin">Login</button>
+            <div class="w-full space-x-2">
+              <button class="btn" @click="tryLogin">Login</button>
+              <RouterLink to="/register"><button class="btn">Register</button></RouterLink>
+            </div>
+            
         </div>
     </div>
 </template>
