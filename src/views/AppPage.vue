@@ -36,7 +36,7 @@ let sevenHours = 1000*60*60*7
 onMounted(() => {
     console.log(prop.user)
     reloadUserData()
-.then(() => reloadTodo())
+    reloadTodo()
 })
 
 onUnmounted(() => {
@@ -45,8 +45,8 @@ onUnmounted(() => {
 
 })
 
-const reloadUserData = async () => {
-    await fetch(`http://localhost:3001/user/${currentUser.value.id}`)
+const reloadUserData =  () => {
+    fetch(`http://localhost:3001/user/${currentUser.value.id}`)
         .then(resp => resp.json())
         .then(data => {
             currentUser.value = data
@@ -348,17 +348,20 @@ const addBoard = () => {
         </div>
     </div>
     <!-- Remove Pose-it Warning -->
-    <input type="checkbox" id="remove-modal" class="modal-toggle" />
-    <div class="modal">
-        <div class="modal-box  bg-red-400">
-            <h3 class="font-bold text-2xl text-white">Warning</h3>
-            <p class="py-4 text-white">This will permanant remove this pose-it. Are you sure about this?</p>
-            <div class="modal-action">
-                <label for="remove-modal" class="btn">Abort</label>
-                <label for="remove-modal" @click="removePoseit" class="btn">Confirm</label>
+    <Teleport to="body">
+        <input type="checkbox" id="remove-modal" class="modal-toggle" />
+        <div class="modal">
+            <div class="modal-box  bg-red-400">
+                <h3 class="font-bold text-2xl text-white">Warning</h3>
+                <p class="py-4 text-white">This will permanant remove this pose-it. Are you sure about this?</p>
+                <div class="modal-action">
+                    <label for="remove-modal" class="btn">Abort</label>
+                    <label for="remove-modal" @click="removePoseit" class="btn">Confirm</label>
+                </div>
             </div>
         </div>
-    </div>
+    </Teleport>
+    
 </template>
  
 <style scoped></style>

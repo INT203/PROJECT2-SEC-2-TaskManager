@@ -32,6 +32,7 @@ function todoManipulation() {
             }else{
                   user.todo[itemIndex].tags = user.todo[itemIndex].tags.filter(tag => tag !== 'Done')
             }
+            
             await fetch(`http://localhost:3001/user/${user.id}`,{
                   method: "PUT",
                   headers:{
