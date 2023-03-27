@@ -17,7 +17,9 @@
         }
       ],
       "board": [
-        "Default board"
+        "Default board",
+        "1",
+        "2"
       ]
     },
     {
@@ -116,9 +118,18 @@
       ]
     },
     {
-      "id": 1678008260707,
-      "user": "new",
-      "pass": "new",
+      "id": 1679832638198,
+      "user": "Usa",
+      "pass": "as",
+      "todo": [],
+      "board": [
+        "Default board"
+      ]
+    },
+    {
+      "id": 1679834089851,
+      "user": "Usamee",
+      "pass": "456789",
       "todo": [],
       "board": [
         "Default board"

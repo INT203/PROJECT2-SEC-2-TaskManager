@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import App from "./views/AppPage.vue";
 import Login from "./views/Login.vue";
+import CreateAccount from "./views/CreateAccount.vue"
 
 const routes = [
   {
@@ -13,6 +14,11 @@ const routes = [
     name: "App",
     component: App
   },
+  {
+    path: "/register",
+    name: "CreateAccount",
+    component: CreateAccount
+  }
 ];
 
 const router = createRouter({
@@ -22,9 +28,9 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const isLoggedIn = localStorage.getItem("isLoggedIn").toLocaleLowerCase() === "true" ?? false
-  if (!isLoggedIn && to.path !== "/login") {
+  if (!isLoggedIn && to.path !== "/login" && to.path !== "/register") {
     next("/login");
-  }  else {
+  }else {
     next()
   }
 });

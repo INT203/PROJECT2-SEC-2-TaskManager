@@ -259,17 +259,17 @@ const addBoard = () => {
         <input v-model="drawerCheck" id="menu-drawer" type="checkbox" class="drawer-toggle" />
         <div class="drawer-content">
             <!-- NAV BAR -->
-            <Navbar @reload="reloadTodo()" @searching="handleSeaching" @showLogin="isShowLogin = !isShowLogin; isDim = true"
+            <Navbar @reload="reloadTodo()" @searching="handleSeaching" @showLogin="isShowLogin = !isShowLogin;"
                 :board-name="findBoardName(selected)" :tags="tags" :todoRemind="todoRemind">
             </Navbar>
 
             <!-- Dim -->
             <div class="absolute h-screen w-screen bg-black opacity-50 z-30 " v-show="isDim" @click="closeOvelay">
             </div>
-<!-- 
-            <CreateAcc @setCurrent="(user) => handleLogingUser(user)" v-show="false" :isDim=true></CreateAcc>
 
-            <LoginPanel @close="closeOvelay" @loginUser="(user) => handleLogingUser(user)" v-show="isShowLogin">
+            <!-- <CreateAcc @setCurrent="(user) => handleLogingUser(user)" v-show="true" :isDim=true></CreateAcc> -->
+
+            <!-- <LoginPanel @close="closeOvelay" @loginUser="(user) => handleLogingUser(user)" v-show="isShowLogin">
             </LoginPanel> -->
 
             <!-- Show Detail -->
