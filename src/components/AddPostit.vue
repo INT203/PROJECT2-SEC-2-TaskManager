@@ -69,7 +69,8 @@
             v-model="postit.description"></textarea>
       <h3 class="text-xl font-semibold">Due Date</h3>
       <input type="date" placeholder="Due date" class="border border-gray-500 m-1 w-1/3 input"
-            v-model="postit.dueDate">
+            v-model="postit.dueDate" :min="new Date().toISOString().substring(0,10)">
+            {{  }}
       <button @click="createPostIt"
             class="border border-gray-500 mt-5 btn bg-blue-500 hover:bg-blue-400">Add</button>
 </div>

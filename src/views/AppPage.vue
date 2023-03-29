@@ -33,41 +33,7 @@ let currentUser = ref(prop.user)
 let dateNow = new Date()
 let aDay = 1000*60*60*24
 let sevenHours = 1000*60*60*7
-onMounted(() => {
-    console.log(prop.user)
-    reloadUserData()
-    reloadTodo()
-})
-
-onUnmounted(() => {
-    console.log("UNMOUNT???")
-    localStorage.setItem('isLoggedIn', "false")
-
-})
-
-const reloadUserData =  () => {
-    fetch(`http://localhost:3001/user/${currentUser.value.id}`)
-        .then(resp => resp.json())
-        .then(data => {
-            currentUser.value = data
-            board.value = data.board
-        })
-        .catch(error => {
-            console.error('Error fetching user data:', error);
-        });
-}
-
-const handleSeaching = (value) => {
-    searchTags.value = value[0]
-    searchBox.value = value[1]
-}
-
-const createTodoHandler = (data) => {
-    reloadUserData()
-        .then(() => createTodo(currentUser.value, data.topic, data.tags, data.description, data.createdDate, data.dueDate, data.board))
-        .then(() => reloadTodo())
-        .then(() => reminder())
-}
+let selectedBoard
 
 selectedPoseit.value = {
     topic: '',
@@ -78,120 +44,87 @@ selectedPoseit.value = {
     board: ''
 }
 
+
+// Life Cycle Hook section
+
 onMounted(() => {
-    reloadTodo()
+    console.log(prop.user)
     reloadUserData()
+    reloadTodo()
     reminder()
 })
 
-const todoRemind = ref({
-      "OneDayLeft" : [],
-      "TwoDayLeft" : [],
-      "ThreeDayLeft" : [],
-      "Late" : [],
-      "Remind" : false
+onUnmounted(() => {
+    localStorage.setItem('isLoggedIn', "false")
 })
 
+// Update Data on Webpage
 
-setInterval(async ()=>{
-    if (dateNow.getHours() == 0 && dateNow.getMinutes() == 0 && 0 < dateNow.getSeconds() < 5 ){
-        reminder()
-    }
-},1000)  //EDIT
-    
-const reminder = () =>{
-    readTodo(currentUser.value.id)
-    .then(todoList => {
-
-        todoRemind.value = {
-            "OneDayLeft" : [],
-            "TwoDayLeft" : [],
-            "ThreeDayLeft" : [],
-            "Late" : [],
-            "Remind" : []
-        }
-
-        for (const todo of todoList) {
-            let dueDate = new Date(todo.dueDate)
-            let range = Math.floor((dueDate.getTime()-dateNow.getTime())-sevenHours)
-            let inday = range/aDay
-
-            if(todo.done === false){
-                    if(range <= 0) todoRemind.value["Late"].push(todo)
-                    if(inday > 0 && inday <= 1 ){
-                        todoRemind.value["OneDayLeft"].push(todo)
-                        todoRemind.value["Remind"].push(todo)
-                    }
-                    if(inday > 1 && inday <= 2){
-                        todoRemind.value["TwoDayLeft"].push(todo)
-                        todoRemind.value["Remind"].push(todo)
-                    }
-                    if(inday > 2 && inday <= 3){
-                        todoRemind.value["ThreeDayLeft"].push(todo)
-                        todoRemind.value["Remind"].push(todo)
-                    }
-            }
-            
-        }
-        //   console.log(todoRemind.value)
-        return todoRemind.value
-    }).catch(err => console.log(err))
+const reloadUserData = async () => {
+    return await fetch(`http://localhost:3001/user/${currentUser.value.id}`)
+        .then(resp => resp.json())
+        .then(data => {
+            currentUser.value = data
+            board.value = data.board
+        })
+        .catch(error => {
+            console.error('Error fetching user data:', error);
+        });
 }
 
-const reloadTodo = () => {
-    let selectedBoard = board.value[selected.value]
-    readTodo(currentUser.value.id)
+const reloadTodo = async () => {
+    if (selected.value >= 0) {
+        selectedBoard = board.value[selected.value]
+        return await readTodo(currentUser.value.id)
         .then(todoList => dateFormat(todoList))
         .then(todoList => todoList.filter(e => e.board === selectedBoard))
         .then(todoList => todoList.filter(todo => todo.topic.toLowerCase().includes(searchBox.value.toLowerCase().trim()) || todo.description.toLowerCase().includes(searchBox.value.toLowerCase().trim())))
         .then(todoList => searchTags.value.includes("None") ? todoList.filter(todo => todo.tags.length === 0) : todoList.filter(todo => searchTags.value.every(tag => todo.tags.includes(tag))))
         .then(FilteredtodoList => todoOnBoard.value = FilteredtodoList)
+    } else{
+        return todoOnBoard.value = dateFormat(todoRemind.value[selectedBoard])
+    } 
+    
 }
 
+// Event Handler section 
 
-
-let isValid = computed(() => {
-    let obj = {}
-    obj['IsExist'] = board.value.includes(newBoard.value)
-    obj['IsEmpty'] = newBoard.value.trim().length === 0
-    return obj
-})
-
-const findBoardName = (selectedPage) => {
-    return board.value[selectedPage]
+const handleSeaching = (value) => {
+    searchTags.value = value[0]
+    searchBox.value = value[1]
 }
 
-const showDetail = (item) => {
+const showReminderHandler = (board) => {
+    selected.value = -1
+    selectedBoard = board
+    reloadUserData()
+    .then(() => reloadTodo())
+}
+
+const createTodoHandler = (data) => {
+    reloadUserData()
+        .then(() => createTodo(currentUser.value, data.topic, data.tags, data.description, data.createdDate, data.dueDate, data.board))
+        .then(() => reloadTodo())
+        .then(() => reminder())
+}
+
+const showDetailHandler = (item) => {
     isShowD.value = true
     isDim.value = true
     selectedPoseit.value = item
     reloadUserData()
 }
 
-const closeOvelay = () => {
-    isShowD.value = false
-    isDim.value = false
-    isShowP.value = false
-    isShowLogin.value = false
-    drawerCheck.value = false
-    reloadTodo()
-    reminder()
-}
-
-
-document.addEventListener("keydown", function (event) {
-    if (event.code === "Escape" && (isShowD.value == true || isShowP.value == true)) {
-        closeOvelay()
-    }
-});
-
-const removePoseit = () => {
+const removePoseitHandler = () => {
     let postitcDate = selectedPoseit.value.createdDate
-    reloadUserData()
-        .then(() => removeTodo(currentUser.value, postitcDate))
-        .then(() => reloadTodo())
-        .then(() => reloadUserData())
-        .then(() => reminder())
+    removeTodo(currentUser.value, postitcDate)
+    .then(() => reloadUserData()
+    .then(() => readTodo()
+    .then(() => {
+        reminder()
+        closeOvelay()
+    })))
+    
 
     selectedPoseit.value = {
         topic: '',
@@ -201,10 +134,27 @@ const removePoseit = () => {
         dueDate: new Date(),
         board: ''
     }
-    closeOvelay()
 }
 
-const removeBoard = (rmBoard) => {
+const addBoardHandler = () => {
+    addboardmodal.value.checked = false
+    currentUser.value.board.push(newBoard.value)
+    console.log(currentUser.value.board)
+    reloadUserData()
+        .then(fetch(`http://localhost:3001/user/${currentUser.value.id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(currentUser.value)
+        }))
+
+        .then(() => reloadUserData())
+    selected.value = board.value.length - 1
+    newBoard.value = ''
+}
+
+const removeBoardHandler = (rmBoard) => {
     if (board.value.length != 1) {
         reloadUserData()
             .then(removeTodoOnDeletedBoard(currentUser.value, rmBoard))
@@ -224,34 +174,104 @@ const removeBoard = (rmBoard) => {
     }
 }
 
+// Reminder section
+
+const todoRemind = ref({
+      "OneDayLeft" : [],
+      "TwoDayLeft" : [],
+      "ThreeDayLeft" : [],
+      "Late" : [],
+      "Remind" : false
+})
+
+setInterval(async ()=>{
+    if (dateNow.getHours() == 0 && dateNow.getMinutes() == 0 && 0 < dateNow.getSeconds() < 5 ){
+        reminder()
+    }
+},1000)  // Update Reminder when passing midnight
+    
+const reminder = () =>{
+    readTodo(currentUser.value.id)
+    .then(todoList => {
+
+        todoRemind.value = {
+            "OneDayLeft" : [],
+            "TwoDayLeft" : [],
+            "ThreeDayLeft" : [],
+            "Late" : [],
+            "Remind" : []
+        }
+
+        for (const todo of todoList) {
+            let dueDate = new Date(todo.dueDate)
+            let range = Math.floor((dueDate.getTime()-dateNow.getTime())-sevenHours)
+            let inday = range/aDay
+
+            if(todo.done === false){
+                if(range <= 0) todoRemind.value["Late"].push(todo)
+                else if(inday <= 1 ){
+                    todoRemind.value["OneDayLeft"].push(todo)
+                    todoRemind.value["Remind"].push(todo)
+                }
+                else if(inday <= 2){
+                    todoRemind.value["TwoDayLeft"].push(todo)
+                    todoRemind.value["Remind"].push(todo)
+                }
+                else if(inday <= 3){
+                    todoRemind.value["ThreeDayLeft"].push(todo)
+                    todoRemind.value["Remind"].push(todo)
+                }
+            }
+            
+        }
+        return todoRemind.value
+    }).catch(err => console.log(err))
+}
+
+// UI display control section
+
+let isValid = computed(() => {
+    let obj = {}
+    obj['IsExist'] = board.value.includes(newBoard.value)
+    obj['IsEmpty'] = newBoard.value.trim().length === 0
+    return obj
+})
+
+const closeOvelay = () => {
+    isShowD.value = false
+    isDim.value = false
+    isShowP.value = false
+    isShowLogin.value = false
+    drawerCheck.value = false
+    reloadUserData().then(() => {
+        reminder()
+        reloadTodo()
+    })
+    
+}
+
 const showAddPost = () => {
     isDim.value = true
     isShowP.value = true
 }
 
+document.addEventListener("keydown", function (event) {
+    if (event.code === "Escape" && (isShowD.value == true || isShowP.value == true)) {
+        closeOvelay()
+    }
+})
+
+// Get item section
+
+const findBoardName = (selectedPage) => {
+    return board.value[selectedPage]
+}
 
 const boardFromList = (selectboard) => {
     selected.value = board.value.indexOf(selectboard)
     closeOvelay()
 }
 
-const addBoard = () => {
-    addboardmodal.value.checked = false
-    currentUser.value.board.push(newBoard.value)
-    console.log(currentUser.value.board)
-    reloadUserData()
-        .then(fetch(`http://localhost:3001/user/${currentUser.value.id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(currentUser.value)
-        }))
-
-        .then(() => reloadUserData())
-    selected.value = board.value.length - 1
-    newBoard.value = ''
-}
 </script>
  
 <template>
@@ -259,8 +279,8 @@ const addBoard = () => {
         <input v-model="drawerCheck" id="menu-drawer" type="checkbox" class="drawer-toggle" />
         <div class="drawer-content">
             <!-- NAV BAR -->
-            <Navbar @reload="reloadTodo()" @searching="handleSeaching" @showLogin="isShowLogin = !isShowLogin;"
-                :board-name="findBoardName(selected)" :tags="tags" :todoRemind="todoRemind">
+            <Navbar @reload="reloadTodo()" @searching="handleSeaching" @showLogin="isShowLogin = !isShowLogin;" 
+            @showReminder="showReminderHandler" :board-name="findBoardName(selected)" :tags="tags" :todoRemind="todoRemind">
             </Navbar>
 
             <!-- Dim -->
@@ -296,11 +316,11 @@ const addBoard = () => {
                 <div id="board"
                     class="w-10/12 h-5/6 justify-start overflow-auto m-auto absolute  left-1/2 -translate-x-1/2 -translate-y-1/2 p-12 bg-white grid lg:grid-cols-4 md:grid-cols-2 lg:gap-4 md:gap-6 sm:grid-cols-1 sm:gap-12 rounded-xl my-scrollbar board-top">
                     <!-- POST_IT -->
-                    <postIt v-for="card in todoOnBoard" :card="card" @click="showDetail(card)"></postIt>
+                    <postIt v-for="card in todoOnBoard" :card="card" @click="showDetailHandler(card)"></postIt>
                 </div>
 
                 <!-- CREATE POST-IT BUTTON  -->
-                <div class="bg-slate-500 h-20 w-20 rounded-xl absolute right-5 bottom-5 opacity-50 hover:opacity-100 hover:cursor-pointer flex"
+                <div v-if="selected >= 0" class="bg-slate-500 h-20 w-20 rounded-xl absolute right-5 bottom-5 opacity-50 hover:opacity-100 hover:cursor-pointer flex"
                     @click="showAddPost">
                     <img src="/images/postit-icon.png" alt="post-it-picture-logo" class="w-16 m-auto">
                 </div>
@@ -335,7 +355,7 @@ const addBoard = () => {
                     <p class="pl-1 mt-2 text-red-600">{{ isValid.IsEmpty ? "Board name can't be empty!" :
                         isValid.IsExist ? "This board is already existed !" : "" }}</p>
                     <div class="modal-action">
-                        <button @click="addBoard" :for="['add-board-modal']" :class="['btn']"
+                        <button @click="addBoardHandler" :for="['add-board-modal']" :class="['btn']"
                             :disabled="isValid.IsEmpty || isValid.IsExist"> Create</button>
                     </div>
                 </label>
@@ -343,7 +363,7 @@ const addBoard = () => {
         </div>
 
         <div class="drawer-side" v-show="drawerCheck">
-            <SideBar :boards="board" @close="closeOvelay()" @remove="(data) => removeBoard(data)"
+            <SideBar :boards="board" @close="closeOvelay()" @remove="(data) => removeBoardHandler(data)"
                 @goToBoard="(data) => boardFromList(data)"></SideBar>
         </div>
     </div>
@@ -356,7 +376,7 @@ const addBoard = () => {
                 <p class="py-4 text-white">This will permanant remove this pose-it. Are you sure about this?</p>
                 <div class="modal-action">
                     <label for="remove-modal" class="btn">Abort</label>
-                    <label for="remove-modal" @click="removePoseit" class="btn">Confirm</label>
+                    <label for="remove-modal" @click="removePoseitHandler" class="btn">Confirm</label>
                 </div>
             </div>
         </div>

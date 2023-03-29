@@ -44,13 +44,9 @@ const tryLogin = () => {
                 <input type="text" class="input input-bordered w-full" v-model="username">
                 <span class="label-text pb-3 pt-5 text-3xl ">PassWord</span>
                 <input type="password" class="input input-bordered w-full" v-model="password">
-                <div class="input-group">
-                    <input type="checkbox" class="checkbox" id="passCheckbox" ref="passCheckbox">
-                    <label for="passCheckbox">Show password</label>
-                </div>
 
             </div>
-            <div class="w-full space-x-2">
+            <div class="w-full space-x-2 mt-5">
               <button class="btn" @click="tryLogin">Login</button>
               <RouterLink to="/register"><button class="btn">Register</button></RouterLink>
             </div>

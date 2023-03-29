@@ -4,18 +4,7 @@
       "id": "1",
       "user": "Keng_WC",
       "pass": "1234",
-      "todo": [
-        {
-          "id": "2023-02-28T17:48:31.929Z",
-          "topic": "test1",
-          "tags": [],
-          "description": "sada",
-          "createdDate": "2023-02-27T17:48:31.929Z",
-          "dueDate": "2023-03-11T00:00:00.000Z",
-          "board": "Default board",
-          "done": false
-        }
-      ],
+      "todo": [],
       "board": [
         "Default board",
         "1",
@@ -130,6 +119,15 @@
       "id": 1679834089851,
       "user": "Usamee",
       "pass": "456789",
+      "todo": [],
+      "board": [
+        "Default board"
+      ]
+    },
+    {
+      "id": 1679928728378,
+      "user": "KengWC",
+      "pass": "12345678",
       "todo": [],
       "board": [
         "Default board"

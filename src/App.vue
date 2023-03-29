@@ -17,7 +17,7 @@ const tryLogin = (user) => {
 
 </script>
 <template>
-      <router-view @loginUser="(user) => tryLogin(user)" :user="currentUser"> </router-view>{{ $route.path }}
+      <router-view @loginUser="(user) => tryLogin(user)" :user="currentUser"> </router-view>
 </template>
 
 <style >

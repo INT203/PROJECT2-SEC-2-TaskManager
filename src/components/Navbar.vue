@@ -6,19 +6,26 @@ import burgerIcon from './icons/burgerIcon.vue';
 import dropDownIcon from './icons/dropDownIcon.vue'
 import searchBoxIcon from './icons/searchBoxIcon.vue'
 import { RouterLink } from 'vue-router';
+let ReminderBoard = ref('')
 const prop = defineProps({
       boardName: String,
       tags: Array,
       todoRemind: Object
 })
 const emit = defineEmits([
-      "searching",
+      'showReminder',
+      'searching',
       'showLogin',
       'reload'
 ])
 const searchTags = ref([])
 const showSearchBtn = ref(false)
 const searchBox = ref('')
+
+const showReminder = (Reminder) => {
+      ReminderBoard.value = Reminder
+      emit('showReminder' , Reminder)
+}
 onUpdated(() => {
       emit("searching", [searchTags.value, searchBox.value])
 })
@@ -37,7 +44,7 @@ onUpdated(() => {
             <div class="navbar-center">
                   <label for="menu-drawer" class="btn btn-ghost normal-case text-2xl font-Athiti">
                         <burgerIcon/>
-                        &nbsp;{{ boardName }}
+                        &nbsp;{{ boardName ?? ReminderBoard}}
                   </label>
 
             </div>
@@ -53,16 +60,16 @@ onUpdated(() => {
                                           <h3 class="card-title">Reminder [ {{ todoRemind["Remind"].length }} ]</h3>
                                           <hr>
                                           <div class="form-control w-full text-sm font-semibold space-y-2">
-                                                <label class="cursor-pointer label hover:bg-gray-300 hover:rounded-md">
+                                                <label @click="showReminder('OneDayLeft')" class="cursor-pointer label hover:bg-gray-300 hover:rounded-md">
                                                       <span class=" text-left">1 day left ( {{ todoRemind["OneDayLeft"].length }} )</span>
                                                 </label>
-                                                <label class="cursor-pointer label hover:bg-gray-300 hover:rounded-md">
+                                                <label @click="showReminder( 'TwoDayLeft')" class="cursor-pointer label hover:bg-gray-300 hover:rounded-md">
                                                       <span class=" text-left">2 days left ( {{ todoRemind["TwoDayLeft"].length }} )</span>
                                                 </label>
-                                                <label class="cursor-pointer label hover:bg-gray-300 hover:rounded-md">
+                                                <label @click="showReminder('ThreeDayLeft')" class="cursor-pointer label hover:bg-gray-300 hover:rounded-md">
                                                       <span class=" text-left">3 days left ( {{ todoRemind["ThreeDayLeft"].length }} )</span>
                                                 </label>
-                                                <label class="cursor-pointer label hover:bg-gray-300 hover:rounded-md">
+                                                <label @click="showReminder('Late')" class="cursor-pointer label hover:bg-gray-300 hover:rounded-md">
                                                       <span class=" text-left">Late ( {{ todoRemind["Late"].length }} )</span>
                                                 </label>
                                           </div>
