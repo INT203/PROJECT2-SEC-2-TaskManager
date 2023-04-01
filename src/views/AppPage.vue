@@ -7,12 +7,11 @@ import PostItDetail from '../components/PostItDetail.vue'
 import AddPostit from '../components/AddPostit.vue'
 import Navbar from '../components/Navbar.vue'
 import SideBar from '../components/SideBar.vue'
-import CreateAcc from '../components/CreateAcc.vue'
-import LoginPanel from '../components/LoginPanel.vue'
 
 const prop = defineProps({
     user : Object
 })
+const emit = defineEmits(['loginUser'])
 const router = useRouter()
 const { readTodo, setTodoDone, createTodo, dateFormat, removeTodoOnDeletedBoard, removeTodo } = todoManipulation()
 let selected = ref(0)
@@ -286,11 +285,6 @@ const boardFromList = (selectboard) => {
             <!-- Dim -->
             <div class="absolute h-screen w-screen bg-black opacity-50 z-30 " v-show="isDim" @click="closeOvelay">
             </div>
-
-            <!-- <CreateAcc @setCurrent="(user) => handleLogingUser(user)" v-show="true" :isDim=true></CreateAcc> -->
-
-            <!-- <LoginPanel @close="closeOvelay" @loginUser="(user) => handleLogingUser(user)" v-show="isShowLogin">
-            </LoginPanel> -->
 
             <!-- Show Detail -->
             <PostItDetail :postIt="selectedPoseit"

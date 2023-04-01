@@ -4,7 +4,28 @@
       "id": "1",
       "user": "Keng_WC",
       "pass": "1234",
-      "todo": [],
+      "todo": [
+        {
+          "id": "2023-03-29T08:29:08.298Z",
+          "topic": "Keng_WC",
+          "tags": [],
+          "description": "",
+          "createdDate": "2023-03-29T08:29:08.298Z",
+          "dueDate": "2023-03-29T00:00:00.000Z",
+          "board": "Default board",
+          "done": false
+        },
+        {
+          "id": "2023-03-29T08:29:40.161Z",
+          "topic": "Non-Topic",
+          "tags": [],
+          "description": "",
+          "createdDate": "2023-03-29T08:29:40.161Z",
+          "dueDate": "2023-04-01T00:00:00.000Z",
+          "board": "Default board",
+          "done": false
+        }
+      ],
       "board": [
         "Default board",
         "1",
