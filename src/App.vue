@@ -9,9 +9,7 @@ let currentUser = ref({
     "board": ["Default board"]
 })
 
-
 const tryLogin = (user) => {
-      console.log(user)
       currentUser.value = user
 }
 

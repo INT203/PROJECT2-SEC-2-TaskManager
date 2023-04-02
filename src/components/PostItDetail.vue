@@ -3,12 +3,10 @@
             postIt : Object
       }) 
       const emit = defineEmits([
-            "close",
             "setDone"
       ])
       const setDone = () => {
             emit("setDone" , prop.postIt.createdDate)
-            emit("close")
       }
 
 </script>

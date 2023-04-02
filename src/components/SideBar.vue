@@ -14,7 +14,6 @@
       ])
       const isConfirm = ref(false)
       const removeB = (b) => {
-            console.log(b)
             emit('remove', b)
             isConfirm.value = !isConfirm.value
       }

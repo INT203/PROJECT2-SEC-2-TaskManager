@@ -1,12 +1,15 @@
 <script setup>
-import { ref, computed  } from "vue"
-import { useRouter, RouterLink } from "vue-router";
+import { ref, computed, onUpdated  } from "vue"
+import { useRouter } from "vue-router";
 const router = useRouter()
 const username = ref("")
 const password = ref("")
 const confPwd = ref("")
 const emit = defineEmits(["loginUser"])
 const PassWordRegE = /^\w{8,16}$/g
+let userToken
+let passToken
+
 let warningText = ref("")
 const data = computed(() => {
       return {
@@ -18,10 +21,20 @@ const data = computed(() => {
       }
 })
 
+onUpdated(()=>{
+      if (username.value !== userToken || password.value !== passToken) {
+            warningText.value = ""
+      }
+})
+
+const isPassValid = (data) => {
+      return PassWordRegE.test(data)
+}
 
 const createUser = async () => {
-      console.log(PassWordRegE.test(data.value.pass))
-      if (!PassWordRegE.test(data.value.pass)) {
+      userToken = username.value
+      passToken = password.value
+      if (!isPassValid(data.value.pass)) {
             warningText.value = "Use 8 to 16 characters which not contain spacial characters"
       }
       if (await isUserValid(data.value) && PassWordRegE.test(data.value.pass)) {
@@ -37,13 +50,12 @@ const createUser = async () => {
                   router.push("/")
                   
             }).catch((err) => {
-                  console.error(err)
+                  
             })
       }
 }
 
 const isUserValid = (data)=> {
-      console.log(data)
       return fetch("http://localhost:3001/user")
       .then((resp) => resp.json())
       .then((fetchData) => {
@@ -51,14 +63,16 @@ const isUserValid = (data)=> {
                   return fetchData
             }
             else {
-                  warningText.value = "Username can't be empty"
+                  throw new Error("Username can't be empty")
             }
       })
       .then((fetchData) => {
             if (fetchData.every( user => user['user'] !== data.user)) return fetchData
-            else warningText.value = "This username is already exist"
+            throw new Error("This username is already exist")
       })
-      .catch((err) => console.log(err))
+      .catch((err) => {
+            warningText.value = err
+      })
 }
 
 </script>
@@ -80,7 +94,7 @@ const isUserValid = (data)=> {
                   <input v-model="confPwd" type="password" class="input input-bordered w-full">
             </div>
             <div class="w-full space-x-2">
-                  <p class="pl-1 mt-2 text-red-600">{{ password !== confPwd ? "Passwords do not match.": isPassValid == false ? passInvalid : warningText }}</p>
+                  <p class="pl-1 mt-2 text-red-600">{{ password !== confPwd ? "Passwords do not match.":warningText }}</p>
                   <button class="btn btn-accent mt-3" @click="$router.back()"> Go Back </button>
                   <button :disabled="password !== confPwd && isUserValid" class="btn btn-accent mt-3" @click="createUser">Create</button>
             </div>

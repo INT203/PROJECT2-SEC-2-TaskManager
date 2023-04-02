@@ -47,7 +47,6 @@ selectedPoseit.value = {
 // Life Cycle Hook section
 
 onMounted(() => {
-    console.log(prop.user)
     reloadUserData()
     reloadTodo()
     reminder()
@@ -67,7 +66,7 @@ const reloadUserData = async () => {
             board.value = data.board
         })
         .catch(error => {
-            console.error('Error fetching user data:', error);
+            alert('Error fetching user data:', error);
         });
 }
 
@@ -138,7 +137,6 @@ const removePoseitHandler = () => {
 const addBoardHandler = () => {
     addboardmodal.value.checked = false
     currentUser.value.board.push(newBoard.value)
-    console.log(currentUser.value.board)
     reloadUserData()
         .then(fetch(`http://localhost:3001/user/${currentUser.value.id}`, {
             method: "PUT",
@@ -171,6 +169,13 @@ const removeBoardHandler = (rmBoard) => {
 
         selected.value = 0
     }
+}
+
+const deleteAccountHandler = () =>{
+    fetch(`http://localhost:3001/user/${currentUser.value.id}`,{
+        method : "DELETE"
+    })
+    .then(router.push("/login"))
 }
 
 // Reminder section
@@ -207,7 +212,7 @@ const reminder = () =>{
             let inday = range/aDay
 
             if(todo.done === false){
-                if(range <= 0) todoRemind.value["Late"].push(todo)
+                if(inday <= -1) todoRemind.value["Late"].push(todo)
                 else if(inday <= 1 ){
                     todoRemind.value["OneDayLeft"].push(todo)
                     todoRemind.value["Remind"].push(todo)
@@ -224,7 +229,7 @@ const reminder = () =>{
             
         }
         return todoRemind.value
-    }).catch(err => console.log(err))
+    }).catch(err => alert(err))
 }
 
 // UI display control section
@@ -371,6 +376,20 @@ const boardFromList = (selectboard) => {
                 <div class="modal-action">
                     <label for="remove-modal" class="btn">Abort</label>
                     <label for="remove-modal" @click="removePoseitHandler" class="btn">Confirm</label>
+                </div>
+            </div>
+        </div>
+    </Teleport>
+    <Teleport to="body">
+        <input type="checkbox" id="delete-acc" class="modal-toggle" />
+        <div class="modal modal-bottom sm:modal-middle">
+            <div class="modal-box bg-red-400 text-white">
+                <h3 class="font-bold text-2xl">Warning!</h3>
+                <hr>
+                <p class="py-4">Your account will be deleted permanently. Are you sure about deleting.</p>
+                <div class="modal-action">
+                    <label for="delete-acc" class="btn">Abort</label>
+                    <label for="delete-acc" @click="deleteAccountHandler" class="btn">Confirm</label>
                 </div>
             </div>
         </div>

@@ -118,7 +118,8 @@ onUpdated(() => {
                         <label tabindex="0" class="btn btn-ghost btn-circle" @click="emit('showLogin')"><userIcon></userIcon></label>
                         <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
                                <li><RouterLink to="/register">Register</RouterLink></li> 
-                               <li><RouterLink to="/login">Sign Out</RouterLink></li> 
+                               <li><RouterLink to="/login">Sign Out</RouterLink></li>
+                               <li><label for="delete-acc" class="text-red-600">Delete User</label></li>
                         </ul>
                   </div>
 

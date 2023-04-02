@@ -1,21 +1,34 @@
 <script setup>
-import { ref } from 'vue'
-import { useRouter, RouterLink } from 'vue-router'
+import { ref, onUpdated} from 'vue'
+import { useRouter, RouterLink} from 'vue-router'
 const router = useRouter()
 const username = ref("")
 const password = ref("")
+const warning = ref("")
+let userToken
+let passToken
 const emit = defineEmits([
     "loginUser",
-])
+])  
+
+onUpdated(()=>{
+  if (username.value !== userToken || password.value !== passToken) {
+    warning.value = ""
+  }
+})
+
 const tryLogin = () => {
+  userToken = username.value
+  passToken = password.value
+
   fetch(`http://localhost:3001/user?user=${username.value}`)
     .then(resp => resp.json())
     .then((data) => {
-      if (data.length === 0) {
-        console.log('This username in not exist ')
-      }
-  
-      else {
+      if (username.value.length == 0) {
+        throw new Error("Username can't be empty")
+      }else if (data.length === 0 || data[0].pass !== password.value || data.length === 0) {
+        throw new Error("Username or password is incorrect")
+      } else {
         return data
       }
     })
@@ -25,9 +38,9 @@ const tryLogin = () => {
         emit("loginUser" , ...data)
         router.push("/")
         return data[0]
-      } else if (password.value.length === 0) console.log('Password is required')
+      } else if (password.value.length === 0) throw new Error('Password is required')
     })
-    .catch(() => { console.log('Some requirement is missing') })
+    .catch((err) => { warning.value = err })
 }
 
 
@@ -47,6 +60,7 @@ const tryLogin = () => {
 
             </div>
             <div class="w-full space-x-2 mt-5">
+              <p class="pl-1 pb-2 text-red-600">{{warning}}</p>
               <button class="btn" @click="tryLogin">Login</button>
               <RouterLink to="/register"><button class="btn">Register</button></RouterLink>
             </div>
