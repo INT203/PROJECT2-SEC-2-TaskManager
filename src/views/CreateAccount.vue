@@ -37,7 +37,9 @@ const createUser = async () => {
       if (!isPassValid(data.value.pass)) {
             warningText.value = "Use 8 to 16 characters which not contain spacial characters"
       }
-      if (await isUserValid(data.value) && PassWordRegE.test(data.value.pass)) {
+      console.log(await isPassValid(data.value.pass))
+      if (await isUserValid(data.value) && isPassValid(data.value.pass)) {
+            console.log("TEST")
             fetch("http://localhost:3001/user", {
                   method: "POST",
                   headers: {
@@ -67,7 +69,7 @@ const isUserValid = (data)=> {
             }
       })
       .then((fetchData) => {
-            if (fetchData.every( user => user['user'] !== data.user)) return fetchData
+            if (fetchData.every( user => user['user'] !== data.user)) return true
             throw new Error("This username is already exist")
       })
       .catch((err) => {

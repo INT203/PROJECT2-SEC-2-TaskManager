@@ -163,11 +163,12 @@ const removeBoardHandler = (rmBoard) => {
                 },
                 body: JSON.stringify(currentUser.value)
             }
-            )
-            ).then(() => reloadUserData())
-            .then(() => reminder())
+            ).then(() => reloadUserData()
+            .then(() => {
+                reminder()
+                selected.value = 0
+            })))
 
-        selected.value = 0
     }
 }
 
