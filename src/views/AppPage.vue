@@ -61,9 +61,10 @@ onUnmounted(() => {
 const reloadUserData = async () => {
     return await fetch(`http://localhost:3001/user/${currentUser.value.id}`)
         .then(resp => resp.json())
-        .then(data => {
+        .then(async (data) => {
             currentUser.value = data
             board.value = data.board
+            return data
         })
         .catch(error => {
             alert('Error fetching user data:', error);
@@ -102,8 +103,10 @@ const showReminderHandler = (board) => {
 const createTodoHandler = (data) => {
     reloadUserData()
         .then(() => createTodo(currentUser.value, data.topic, data.tags, data.description, data.createdDate, data.dueDate, data.board))
-        .then(() => reloadTodo())
-        .then(() => reminder())
+        .then(async () => {
+            await reloadTodo()
+            reminder()
+        })
 }
 
 const showDetailHandler = (item) => {
@@ -116,12 +119,11 @@ const showDetailHandler = (item) => {
 const removePoseitHandler = () => {
     let postitcDate = selectedPoseit.value.createdDate
     removeTodo(currentUser.value, postitcDate)
-    .then(() => reloadUserData()
-    .then(() => readTodo()
-    .then(() => {
+    .then(async () => {
+        await reloadUserData()
         reminder()
         closeOvelay()
-    })))
+    })
     
 
     selectedPoseit.value = {
@@ -146,7 +148,8 @@ const addBoardHandler = () => {
             body: JSON.stringify(currentUser.value)
         }))
 
-        .then(() => reloadUserData())
+        .then(() => reloadUserData()
+        .then(() => reloadTodo))
     selected.value = board.value.length - 1
     newBoard.value = ''
 }
@@ -248,9 +251,9 @@ const closeOvelay = () => {
     isShowP.value = false
     isShowLogin.value = false
     drawerCheck.value = false
-    reloadUserData().then(() => {
-        reminder()
-        reloadTodo()
+    reloadUserData()
+    .then(async() => {
+        await reloadTodo()
     })
     
 }
