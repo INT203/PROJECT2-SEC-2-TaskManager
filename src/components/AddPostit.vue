@@ -1,5 +1,5 @@
 <script setup>
-      import { ref, computed, inject} from 'vue'
+      import { ref} from 'vue'
       const newPostItTags = ref([])
       const prop = defineProps({
             board: String,

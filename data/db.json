@@ -16,132 +16,44 @@
           "done": false
         },
         {
-          "id": "2023-04-01T15:40:20.085Z",
-          "topic": "asfasfasf",
+          "id": "2023-04-08T04:14:04.737Z",
+          "topic": "asfsaf",
           "tags": [],
-          "description": "asfasfas",
-          "createdDate": "2023-04-01T15:40:20.085Z",
-          "dueDate": "2023-04-01T00:00:00.000Z",
-          "board": "Default board",
+          "description": "",
+          "createdDate": "2023-04-08T04:14:04.737Z",
+          "dueDate": "2023-04-08T00:00:00.000Z",
+          "board": "1",
           "done": false
+        },
+        {
+          "id": "2023-04-08T04:14:21.506Z",
+          "topic": "HUM",
+          "tags": [
+            "Done"
+          ],
+          "description": "",
+          "createdDate": "2023-04-08T04:14:21.506Z",
+          "dueDate": "2023-04-08T00:00:00.000Z",
+          "board": "1",
+          "done": true
+        },
+        {
+          "id": "2023-04-08T04:17:31.226Z",
+          "topic": "dsafsd",
+          "tags": [
+            "Done"
+          ],
+          "description": "",
+          "createdDate": "2023-04-08T04:17:31.226Z",
+          "dueDate": "2023-04-08T00:00:00.000Z",
+          "board": "sdfadf",
+          "done": true
         }
       ],
       "board": [
         "Default board",
         "1",
         "2"
-      ]
-    },
-    {
-      "id": "0",
-      "user": "guess",
-      "pass": "1234",
-      "todo": [
-        {
-          "id": "2023-03-02T13:50:45.893Z",
-          "topic": "Test1",
-          "tags": [],
-          "description": "Desc",
-          "createdDate": "2023-03-02T13:50:45.893Z",
-          "dueDate": "2023-03-02T13:50:18.312Z",
-          "board": "Default board",
-          "done": false
-        },
-        {
-          "id": "2023-03-02T21:04:37.556Z",
-          "topic": "Test2",
-          "tags": [
-            "Academia",
-            "Work"
-          ],
-          "description": "",
-          "createdDate": "2023-03-02T21:04:37.556Z",
-          "dueDate": "2023-03-02T21:04:29.446Z",
-          "board": "Default board",
-          "done": false
-        },
-        {
-          "id": "2023-03-02T21:04:46.628Z",
-          "topic": "Test3",
-          "tags": [
-            "Work",
-            "Hobby"
-          ],
-          "description": "",
-          "createdDate": "2023-03-02T21:04:46.628Z",
-          "dueDate": "2023-03-02T21:04:37.557Z",
-          "board": "Default board",
-          "done": false
-        }
-      ],
-      "board": [
-        "Default board",
-        "asfasf"
-      ]
-    },
-    {
-      "id": 1678007710034,
-      "user": "inwchamp",
-      "pass": "d",
-      "todo": [
-        {
-          "id": "2023-04-01T15:37:54.969Z",
-          "topic": "asfas",
-          "tags": [],
-          "description": "",
-          "createdDate": "2023-04-01T15:37:54.969Z",
-          "dueDate": "2023-04-29T00:00:00.000Z",
-          "board": "Default board",
-          "done": false
-        }
-      ],
-      "board": [
-        "Default board"
-      ]
-    },
-    {
-      "id": 1678007796964,
-      "user": "inwchamp",
-      "pass": "champ",
-      "todo": [],
-      "board": [
-        "Default board"
-      ]
-    },
-    {
-      "id": 1679832638198,
-      "user": "Usa",
-      "pass": "as",
-      "todo": [],
-      "board": [
-        "Default board"
-      ]
-    },
-    {
-      "id": 1679834089851,
-      "user": "Usamee",
-      "pass": "456789",
-      "todo": [],
-      "board": [
-        "Default board"
-      ]
-    },
-    {
-      "id": 1679928728378,
-      "user": "KengWC",
-      "pass": "12345678",
-      "todo": [],
-      "board": [
-        "Default board"
-      ]
-    },
-    {
-      "id": 1680360054303,
-      "user": "champ1234",
-      "pass": "qwerty1234",
-      "todo": [],
-      "board": [
-        "Default board"
       ]
     }
   ]

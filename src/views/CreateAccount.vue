@@ -6,7 +6,7 @@ const username = ref("")
 const password = ref("")
 const confPwd = ref("")
 const emit = defineEmits(["loginUser"])
-const PassWordRegE = /^\w{8,16}$/g
+const PassWordRegE = /^\w{8,16}$/g // Any charecters except specical charecters. Equivalent to [a-zA-Z-0-9_]
 let userToken
 let passToken
 
@@ -35,46 +35,43 @@ const createUser = async () => {
       userToken = username.value
       passToken = password.value
       if (!isPassValid(data.value.pass)) {
-            warningText.value = "Use 8 to 16 characters which not contain spacial characters"
-      }
-      console.log(await isPassValid(data.value.pass))
-      if (await isUserValid(data.value) && isPassValid(data.value.pass)) {
-            console.log("TEST")
-            fetch("http://localhost:3001/user", {
-                  method: "POST",
-                  headers: {
-                        "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(data.value)
-            }).then(() => {
+            warningText.value = "Your password must be between 8 to 16 characters and do not contain special charecters."
+            
+      } else if (await isUserValid(data.value)) {
+            try {
+                  await fetch("http://localhost:3001/user", {
+                        method: "POST",
+                        headers: {
+                              "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(data.value)
+                  })
                   localStorage.setItem("isLoggedIn", true)
                   emit("loginUser", data.value);
                   router.push("/")
-                  
-            }).catch((err) => {
-                  
-            })
+            }
+            catch(err) {
+                  alert("Unexpect error is occur: " + err)
+            }
       }
 }
 
-const isUserValid = (data)=> {
-      return fetch("http://localhost:3001/user")
-      .then((resp) => resp.json())
-      .then((fetchData) => {
+const isUserValid = async (data)=> {
+      try {
+            let resp = await fetch("http://localhost:3001/user")
+            let fetchData = await resp.json() 
             if (data.user.length > 0) {
-                  return fetchData
+                  if (fetchData.every( user => user['user'] !== data.user)) return true
+                  else throw new Error("This username already exists.")
             }
             else {
-                  throw new Error("Username can't be empty")
+                  throw new Error("Username can't be empty.")
             }
-      })
-      .then((fetchData) => {
-            if (fetchData.every( user => user['user'] !== data.user)) return true
-            throw new Error("This username is already exist")
-      })
-      .catch((err) => {
+      }
+      catch(err)  {
             warningText.value = err
-      })
+            return false
+      }
 }
 
 </script>

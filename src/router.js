@@ -27,7 +27,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const isLoggedIn = localStorage.getItem("isLoggedIn").toLocaleLowerCase() === "true" ?? false
+  const isLoggedIn = localStorage.getItem("isLoggedIn").toLowerCase() === "true" ?? false
   if (!isLoggedIn && to.path !== "/login" && to.path !== "/register") {
     next("/login");
   }else {

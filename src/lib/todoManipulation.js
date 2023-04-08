@@ -1,9 +1,9 @@
 import { Todo } from './todo'
 function todoManipulation() {
-      async function createTodo(user,topic,tags,desc,cdate,ddate,board) {
+      function createTodo(user,topic,tags,desc,cdate,ddate,board) {
             topic = topic === null || topic === undefined || topic.trim().length === 0 ? "Non-Topic" : topic
             user.todo.push(new Todo(topic,tags,desc,cdate,ddate,board))
-            return await fetch(`http://localhost:3001/user/${user.id}`,{
+            return fetch(`http://localhost:3001/user/${user.id}`,{
                   method: "PUT",
                   headers:{
                         "Content-Type" : "application/json"
@@ -13,19 +13,18 @@ function todoManipulation() {
 
       }
       async function readTodo(userID = 0) {
-            return await fetch(`http://localhost:3001/user/${userID}`)
-            .then(resp => resp.json())
-            .then(data => data.todo)
+            let resp = await fetch(`http://localhost:3001/user/${userID}`)
+            let data = await resp.json()
+            return data.todo
       }
 
 
 
-      async function setTodoDone(user ,cdate){  
+      function setTodoDone(user ,cdate){  
 
             const itemIndex = user.todo.findIndex((todo) =>  {
                   return new Date(todo.createdDate).getTime() == new Date(cdate).getTime()
             })
-            console.log(itemIndex)
             user.todo[itemIndex].done = !user.todo[itemIndex].done
             if(user.todo[itemIndex].done){
                   user.todo[itemIndex].tags.push('Done')
@@ -33,7 +32,7 @@ function todoManipulation() {
                   user.todo[itemIndex].tags = user.todo[itemIndex].tags.filter(tag => tag !== 'Done')
             }
             
-            await fetch(`http://localhost:3001/user/${user.id}`,{
+            return fetch(`http://localhost:3001/user/${user.id}`,{
                   method: "PUT",
                   headers:{
                         "Content-Type" : "application/json"
@@ -41,9 +40,9 @@ function todoManipulation() {
                   body: JSON.stringify(user)
             })
       }
-      async function removeTodoOnDeletedBoard(user , boardName){
+      function removeTodoOnDeletedBoard(user , boardName){
             user.todo = user.todo.filter(todo => todo.board != boardName)
-            await fetch(`http://localhost:3001/user/${user.id}`,{
+            return fetch(`http://localhost:3001/user/${user.id}`,{
                   method: "PUT",
                   headers:{
                         "Content-Type" : "application/json"
@@ -52,9 +51,9 @@ function todoManipulation() {
             })
       }
 
-      async function removeTodo(user , createdate) {
+      function removeTodo(user , createdate) {
             user.todo = user.todo.filter(todo => new Date(todo.createdDate).getTime() != new Date(createdate).getTime())
-            await fetch(`http://localhost:3001/user/${user.id}`,{
+            return fetch(`http://localhost:3001/user/${user.id}`,{
                   method: "PUT",
                   headers:{
                         "Content-Type" : "application/json"

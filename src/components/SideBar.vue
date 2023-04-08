@@ -13,7 +13,7 @@
             "remove"
       ])
       const isConfirm = ref(false)
-      const removeB = (b) => {
+      const removeBoard = (b) => {
             emit('remove', b)
             isConfirm.value = !isConfirm.value
       }
@@ -31,7 +31,7 @@
                   <button v-show="boards.length != 1 && isConfirm == false" id="btn" class="invisible btn btn-ghost border hover:border-red-700 hover:bg-red-100 hover:text-red-700" @click="isConfirm = !isConfirm">
                         <deleteBoard/>
                   </button>
-                  <button v-show="isConfirm" id="btn" class="invisible btn btn-circle btn-outline btn-sm" @click="removeB(board)">
+                  <button v-show="isConfirm" id="btn" class="invisible btn btn-circle btn-outline btn-sm" @click="removeBoard(board)">
                         <checkAgree/> 
                   </button>
                   <button v-show="isConfirm" id="btn" class="invisible btn btn-circle btn-outline btn-sm" @click="isConfirm = !isConfirm">

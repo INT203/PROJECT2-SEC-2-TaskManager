@@ -1,5 +1,5 @@
 <script setup>
-import { ref , onMounted, inject} from "vue"
+import { ref } from "vue"
 let currentUser = ref({
     "id": "0",
     "user": "guess",
@@ -15,7 +15,7 @@ const tryLogin = (user) => {
 
 </script>
 <template>
-      <router-view @loginUser="(user) => tryLogin(user)" :user="currentUser"> </router-view>
+      <router-view @loginUser="(user) => tryLogin(user)" :user="currentUser"></router-view>
 </template>
 
 <style >

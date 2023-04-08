@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onUpdated, onMounted, onBeforeMount, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { todoManipulation } from '../lib/todoManipulation'
 import postIt from '../components/postIt.vue'
@@ -9,7 +9,7 @@ import Navbar from '../components/Navbar.vue'
 import SideBar from '../components/SideBar.vue'
 
 const prop = defineProps({
-    user : Object
+    user: Object
 })
 const emit = defineEmits(['loginUser'])
 const router = useRouter()
@@ -17,9 +17,9 @@ const { readTodo, setTodoDone, createTodo, dateFormat, removeTodoOnDeletedBoard,
 let selected = ref(0)
 let board = ref(["Default board"])
 let tags = ["Academia", "Work", "Hobby", "Routine", "Important", "Moderate", "Low", "Critical!!!"]
-let selectedPoseit = ref('')
-let isShowD = ref(false)
-let isShowP = ref(false)
+let selectedPostit = ref('')
+let isShowDetail = ref(false)
+let isShowPostIt = ref(false)
 let isShowLogin = ref(false)
 let newBoard = ref('')
 let isDim = ref(false)
@@ -30,11 +30,11 @@ let searchBox = ref('')
 let todoOnBoard = ref([])
 let currentUser = ref(prop.user)
 let dateNow = new Date()
-let aDay = 1000*60*60*24
-let sevenHours = 1000*60*60*7
+let aDay = 1000 * 60 * 60 * 24
+let sevenHours = 1000 * 60 * 60 * 7
 let selectedBoard
 
-selectedPoseit.value = {
+selectedPostit.value = {
     topic: '',
     tags: [],
     description: '',
@@ -46,9 +46,8 @@ selectedPoseit.value = {
 
 // Life Cycle Hook section
 
-onMounted(() => {
-    reloadUserData()
-    reloadTodo()
+onMounted(async () => {
+    await reloadUserData()
     reminder()
 })
 
@@ -59,74 +58,69 @@ onUnmounted(() => {
 // Update Data on Webpage
 
 const reloadUserData = async () => {
-    return await fetch(`http://localhost:3001/user/${currentUser.value.id}`)
-        .then(resp => resp.json())
-        .then(async (data) => {
-            currentUser.value = data
-            board.value = data.board
-            return data
-        })
-        .catch(error => {
-            alert('Error fetching user data:', error);
-        });
+    try {
+        let resp = await fetch(`http://localhost:3001/user/${currentUser.value.id}`)
+        let data = await resp.json()
+        currentUser.value = data
+        board.value = data.board
+        await reloadTodo()
+    }
+
+    catch (error) {
+        alert('Error fetching user data: ', error);
+    };
 }
 
 const reloadTodo = async () => {
     if (selected.value >= 0) {
         selectedBoard = board.value[selected.value]
-        return await readTodo(currentUser.value.id)
-        .then(todoList => dateFormat(todoList))
-        .then(todoList => todoList.filter(e => e.board === selectedBoard))
-        .then(todoList => todoList.filter(todo => todo.topic.toLowerCase().includes(searchBox.value.toLowerCase().trim()) || todo.description.toLowerCase().includes(searchBox.value.toLowerCase().trim())))
-        .then(todoList => searchTags.value.includes("None") ? todoList.filter(todo => todo.tags.length === 0) : todoList.filter(todo => searchTags.value.every(tag => todo.tags.includes(tag))))
-        .then(FilteredtodoList => todoOnBoard.value = FilteredtodoList)
-    } else{
-        return todoOnBoard.value = dateFormat(todoRemind.value[selectedBoard])
-    } 
-    
+        let todoList = await readTodo(currentUser.value.id)
+        todoList = dateFormat(todoList).filter(e => e.board === selectedBoard)
+        // Search with Desc or Topic
+        todoList = todoList.filter(todo => todo.topic.toLowerCase().includes(searchBox.value.toLowerCase().trim()) || todo.description.toLowerCase().includes(searchBox.value.toLowerCase().trim()))
+        todoList = searchTags.value.includes("None") ? todoList.filter(todo => todo.tags.length === 0) : todoList.filter(todo => searchTags.value.every(tag => todo.tags.includes(tag)))
+        todoOnBoard.value = todoList
+    } else {
+        todoOnBoard.value = dateFormat(todoRemind.value[selectedBoard])
+    }
 }
 
 // Event Handler section 
 
-const handleSeaching = (value) => {
+const searchingHandler = (value) => {
     searchTags.value = value[0]
     searchBox.value = value[1]
 }
 
-const showReminderHandler = (board) => {
+const showReminderHandler = async (board) => {
     selected.value = -1
     selectedBoard = board
-    reloadUserData()
-    .then(() => reloadTodo())
+    await reloadUserData()
 }
 
-const createTodoHandler = (data) => {
-    reloadUserData()
-        .then(() => createTodo(currentUser.value, data.topic, data.tags, data.description, data.createdDate, data.dueDate, data.board))
-        .then(async () => {
-            await reloadTodo()
-            reminder()
-        })
+const createTodoHandler = async (data) => {
+    await reloadUserData()
+    await createTodo(currentUser.value, data.topic, data.tags, data.description, data.createdDate, data.dueDate, data.board)
+    await reloadTodo()
+    reminder()
 }
 
 const showDetailHandler = (item) => {
-    isShowD.value = true
+    isShowDetail.value = true
     isDim.value = true
-    selectedPoseit.value = item
+    selectedPostit.value = item
     reloadUserData()
 }
 
-const removePoseitHandler = () => {
-    let postitcDate = selectedPoseit.value.createdDate
-    removeTodo(currentUser.value, postitcDate)
-    .then(async () => {
-        await reloadUserData()
-        reminder()
-        closeOvelay()
-    })
-    
+const removePostitHandler = async () => {
+    let postitcDate = selectedPostit.value.createdDate
+    await removeTodo(currentUser.value, postitcDate)
+    reloadUserData()
+    reminder()
+    closeOvelay()
 
-    selectedPoseit.value = {
+
+    selectedPostit.value = {
         topic: '',
         tag: [],
         description: '',
@@ -136,104 +130,104 @@ const removePoseitHandler = () => {
     }
 }
 
-const addBoardHandler = () => {
+const addBoardHandler = async () => {
     addboardmodal.value.checked = false
     currentUser.value.board.push(newBoard.value)
-    reloadUserData()
-        .then(fetch(`http://localhost:3001/user/${currentUser.value.id}`, {
+    await fetch(`http://localhost:3001/user/${currentUser.value.id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(currentUser.value)
+    })
+    await reloadUserData()
+    selected.value = board.value.length - 1
+    newBoard.value = ''
+}
+
+const removeBoardHandler = async (rmBoard) => {
+    if (board.value.length != 1) {
+        reloadUserData()
+        await removeTodoOnDeletedBoard(currentUser.value, rmBoard)
+        currentUser.value.board = board.value.filter(x => x != rmBoard)
+        await fetch(`http://localhost:3001/user/${currentUser.value.id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(currentUser.value)
-        }))
-
-        .then(() => reloadUserData()
-        .then(() => reloadTodo))
-    selected.value = board.value.length - 1
-    newBoard.value = ''
-}
-
-const removeBoardHandler = (rmBoard) => {
-    if (board.value.length != 1) {
-        reloadUserData()
-            .then(removeTodoOnDeletedBoard(currentUser.value, rmBoard))
-            .then(currentUser.value.board = board.value.filter(x => x != rmBoard))
-            .then(fetch(`http://localhost:3001/user/${currentUser.value.id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(currentUser.value)
-            }
-            ).then(() => reloadUserData()
-            .then(() => {
-                reminder()
-                selected.value = 0
-            })))
+        })
+        await reloadUserData()
+        reminder()
+        selected.value = 0
 
     }
 }
 
-const deleteAccountHandler = () =>{
-    fetch(`http://localhost:3001/user/${currentUser.value.id}`,{
-        method : "DELETE"
+const deleteAccountHandler = async () => {
+    await fetch(`http://localhost:3001/user/${currentUser.value.id}`, {
+        method: "DELETE"
     })
-    .then(router.push("/login"))
+    router.push("/login")
+}
+
+const setTodoDoneHandler = async (data) => {
+    await setTodoDone(currentUser.value, data)
+    closeOvelay()
 }
 
 // Reminder section
 
 const todoRemind = ref({
-      "OneDayLeft" : [],
-      "TwoDayLeft" : [],
-      "ThreeDayLeft" : [],
-      "Late" : [],
-      "Remind" : false
+    "OneDayLeft": [],
+    "TwoDayLeft": [],
+    "ThreeDayLeft": [],
+    "Late": [],
+    "Remind": false
 })
 
-setInterval(async ()=>{
-    if (dateNow.getHours() == 0 && dateNow.getMinutes() == 0 && 0 < dateNow.getSeconds() < 5 ){
+setInterval(async () => {
+    if (dateNow.getHours() == 0 && dateNow.getMinutes() == 0 && 0 < dateNow.getSeconds() < 5) {
         reminder()
     }
-},1000)  // Update Reminder when passing midnight
-    
-const reminder = () =>{
-    readTodo(currentUser.value.id)
-    .then(todoList => {
+}, 1000)  // Update Reminder when passing midnight
 
-        todoRemind.value = {
-            "OneDayLeft" : [],
-            "TwoDayLeft" : [],
-            "ThreeDayLeft" : [],
-            "Late" : [],
-            "Remind" : []
-        }
+const reminder = async () => {
+    await readTodo(currentUser.value.id)
+        .then(todoList => {
 
-        for (const todo of todoList) {
-            let dueDate = new Date(todo.dueDate)
-            let range = Math.floor((dueDate.getTime()-dateNow.getTime())-sevenHours)
-            let inday = range/aDay
-
-            if(todo.done === false){
-                if(inday <= -1) todoRemind.value["Late"].push(todo)
-                else if(inday <= 1 ){
-                    todoRemind.value["OneDayLeft"].push(todo)
-                    todoRemind.value["Remind"].push(todo)
-                }
-                else if(inday <= 2){
-                    todoRemind.value["TwoDayLeft"].push(todo)
-                    todoRemind.value["Remind"].push(todo)
-                }
-                else if(inday <= 3){
-                    todoRemind.value["ThreeDayLeft"].push(todo)
-                    todoRemind.value["Remind"].push(todo)
-                }
+            todoRemind.value = {
+                "OneDayLeft": [],
+                "TwoDayLeft": [],
+                "ThreeDayLeft": [],
+                "Late": [],
+                "Remind": []
             }
-            
-        }
-        return todoRemind.value
-    }).catch(err => alert(err))
+
+            for (const todo of todoList) {
+                let dueDate = new Date(todo.dueDate)
+                let range = Math.floor((dueDate.getTime() - dateNow.getTime()) - sevenHours)
+                let inday = range / aDay
+
+                if (todo.done === false) {
+                    if (inday <= -1) todoRemind.value["Late"].push(todo)
+                    else if (inday <= 1) {
+                        todoRemind.value["OneDayLeft"].push(todo)
+                        todoRemind.value["Remind"].push(todo)
+                    }
+                    else if (inday <= 2) {
+                        todoRemind.value["TwoDayLeft"].push(todo)
+                        todoRemind.value["Remind"].push(todo)
+                    }
+                    else if (inday <= 3) {
+                        todoRemind.value["ThreeDayLeft"].push(todo)
+                        todoRemind.value["Remind"].push(todo)
+                    }
+                }
+
+            }
+            return todoRemind.value
+        }).catch(err => alert(err))
 }
 
 // UI display control section
@@ -245,26 +239,24 @@ let isValid = computed(() => {
     return obj
 })
 
-const closeOvelay = () => {
-    isShowD.value = false
+const closeOvelay = async () => {
+    isShowDetail.value = false
     isDim.value = false
-    isShowP.value = false
+    isShowPostIt.value = false
     isShowLogin.value = false
     drawerCheck.value = false
-    reloadUserData()
-    .then(async() => {
-        await reloadTodo()
-    })
-    
+    reminder()
+    await reloadUserData()
+
 }
 
 const showAddPost = () => {
     isDim.value = true
-    isShowP.value = true
+    isShowPostIt.value = true
 }
 
 document.addEventListener("keydown", function (event) {
-    if (event.code === "Escape" && (isShowD.value == true || isShowP.value == true)) {
+    if (event.code === "Escape" && (isShowDetail.value == true || isShowPostIt.value == true)) {
         closeOvelay()
     }
 })
@@ -279,7 +271,6 @@ const boardFromList = (selectboard) => {
     selected.value = board.value.indexOf(selectboard)
     closeOvelay()
 }
-
 </script>
  
 <template>
@@ -287,8 +278,9 @@ const boardFromList = (selectboard) => {
         <input v-model="drawerCheck" id="menu-drawer" type="checkbox" class="drawer-toggle" />
         <div class="drawer-content">
             <!-- NAV BAR -->
-            <Navbar @reload="reloadTodo()" @searching="handleSeaching" @showLogin="isShowLogin = !isShowLogin;" 
-            @showReminder="showReminderHandler" :board-name="findBoardName(selected)" :tags="tags" :todoRemind="todoRemind">
+            <Navbar @reload="reloadTodo()" @searching="searchingHandler" @showLogin="isShowLogin = !isShowLogin;"
+                @showReminder="showReminderHandler" :board-name="findBoardName(selected)" :tags="tags"
+                :todoRemind="todoRemind">
             </Navbar>
 
             <!-- Dim -->
@@ -296,19 +288,18 @@ const boardFromList = (selectboard) => {
             </div>
 
             <!-- Show Detail -->
-            <PostItDetail :postIt="selectedPoseit"
-                @setDone="(data) => { setTodoDone(currentUser, data).then(() => closeOvelay()) }" v-show="isShowD">
+            <PostItDetail :postIt="selectedPostit" @setDone="(data) => setTodoDoneHandler(data)" v-show="isShowDetail">
             </PostItDetail>
 
             <!-- ADD POST-IT -->
             <AddPostit @close="closeOvelay" :board="findBoardName(selected)" :tags="tags"
-                @create="(data) => createTodoHandler(data)" v-show="isShowP"> </AddPostit>
+                @create="(data) => createTodoHandler(data)" v-show="isShowPostIt"> </AddPostit>
 
             <!-- BUTTON LEFT [PRIVIOUS BOARD] //CANNOT CLICK IN FIRST BOARD -->
             <div class="h-full w-full bg-slate-900 m-auto flex">
                 <button @click="() => { selected <= 0 ? 0 : selected--; reloadTodo() }"
-                    :class="[selected === 0 ? ' opacity-40' : '', 'h-24 w-24 absolute left-7 top-1/2 -translate-y-1/2 bg-slate-200 z-10 rounded-full transition ease-out duration-500']"
-                    :disabled="selected === 0">
+                    :class="[selected < 0 ? ' opacity-40' : '', 'h-24 w-24 absolute left-7 top-1/2 -translate-y-1/2 bg-slate-200 z-10 rounded-full transition ease-out duration-500']"
+                    :disabled="selected < 1">
                     <span
                         :class="['material-symbols-outlined', selected === 0 ? 'opacity-40' : '', 'text-black text-6xl font-bold pl-5']">
                         arrow_back_ios
@@ -323,7 +314,8 @@ const boardFromList = (selectboard) => {
                 </div>
 
                 <!-- CREATE POST-IT BUTTON  -->
-                <div v-if="selected >= 0" class="bg-slate-500 h-20 w-20 rounded-xl absolute right-5 bottom-5 opacity-50 hover:opacity-100 hover:cursor-pointer flex"
+                <div v-if="selected >= 0"
+                    class="bg-slate-500 h-20 w-20 rounded-xl absolute right-5 bottom-5 opacity-50 hover:opacity-100 hover:cursor-pointer flex"
                     @click="showAddPost">
                     <img src="/images/postit-icon.png" alt="post-it-picture-logo" class="w-16 m-auto">
                 </div>
@@ -347,22 +339,6 @@ const boardFromList = (selectboard) => {
                 </label>
             </div>
 
-            <!-- CREATE BOARD FORM -->
-            <input type="checkbox" id="add-board-modal" class="modal-toggle" ref="addboardmodal" />
-            <label for="add-board-modal" class="modal cursor-pointer super_front">
-                <label class="modal-box relative" for="">
-                    <label for="add-board-modal"
-                        class="btn btn-sm btn-circle absolute right-4 top-4 cursor-pointer">✕</label>
-                    <h3 class="font-bold text-2xl w-fit">Create New Board</h3>
-                    <input type="text" v-model="newBoard" class="input input-bordered mt-3" placeholder="Board Name" />
-                    <p class="pl-1 mt-2 text-red-600">{{ isValid.IsEmpty ? "Board name can't be empty!" :
-                        isValid.IsExist ? "This board is already existed !" : "" }}</p>
-                    <div class="modal-action">
-                        <button @click="addBoardHandler" :for="['add-board-modal']" :class="['btn']"
-                            :disabled="isValid.IsEmpty || isValid.IsExist"> Create</button>
-                    </div>
-                </label>
-            </label>
         </div>
 
         <div class="drawer-side" v-show="drawerCheck">
@@ -370,16 +346,35 @@ const boardFromList = (selectboard) => {
                 @goToBoard="(data) => boardFromList(data)"></SideBar>
         </div>
     </div>
-    <!-- Remove Pose-it Warning -->
+
+    <!-- CREATE BOARD FORM -->
+    <Teleport to="body">
+        <input type="checkbox" id="add-board-modal" class="modal-toggle" ref="addboardmodal" />
+        <label for="add-board-modal" class="modal cursor-pointer super_front">
+            <label class="modal-box relative" for="">
+                <label for="add-board-modal" class="btn btn-sm btn-circle absolute right-4 top-4 cursor-pointer">✕</label>
+                <h3 class="font-bold text-2xl w-fit">Create New Board</h3>
+                <input type="text" v-model="newBoard" class="input input-bordered mt-3" placeholder="Board Name" />
+                <p class="pl-1 mt-2 text-red-600">{{ isValid.IsEmpty ? "Board name can't be empty!" :
+                    isValid.IsExist ? "This board is already existed !" : "" }}</p>
+                <div class="modal-action">
+                    <button @click="addBoardHandler" :for="['add-board-modal']" :class="['btn']"
+                        :disabled="isValid.IsEmpty || isValid.IsExist"> Create</button>
+                </div>
+            </label>
+        </label>    
+    </Teleport>
+
+    <!-- Remove Post-it Warning -->
     <Teleport to="body">
         <input type="checkbox" id="remove-modal" class="modal-toggle" />
         <div class="modal">
             <div class="modal-box  bg-red-400">
                 <h3 class="font-bold text-2xl text-white">Warning</h3>
-                <p class="py-4 text-white">This will permanant remove this pose-it. Are you sure about this?</p>
+                <p class="py-4 text-white">This will permanant remove this post-it. Are you sure about this?</p>
                 <div class="modal-action">
                     <label for="remove-modal" class="btn">Abort</label>
-                    <label for="remove-modal" @click="removePoseitHandler" class="btn">Confirm</label>
+                    <label for="remove-modal" @click="removePostitHandler" class="btn">Confirm</label>
                 </div>
             </div>
         </div>
@@ -398,7 +393,6 @@ const boardFromList = (selectboard) => {
             </div>
         </div>
     </Teleport>
-    
 </template>
  
 <style scoped></style>
