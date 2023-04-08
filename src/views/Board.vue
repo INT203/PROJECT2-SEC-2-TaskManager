@@ -140,23 +140,15 @@ const addBoardHandler = async () => {
         },
         body: JSON.stringify(currentUser.value)
     })
-    await reloadUserData()
     selected.value = board.value.length - 1
     newBoard.value = ''
+    await reloadUserData()
 }
 
 const removeBoardHandler = async (rmBoard) => {
     if (board.value.length != 1) {
-        reloadUserData()
-        await removeTodoOnDeletedBoard(currentUser.value, rmBoard)
         currentUser.value.board = board.value.filter(x => x != rmBoard)
-        await fetch(`http://localhost:3001/user/${currentUser.value.id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(currentUser.value)
-        })
+        await removeTodoOnDeletedBoard(currentUser.value, rmBoard)
         await reloadUserData()
         reminder()
         selected.value = 0
@@ -255,9 +247,9 @@ const showAddPost = () => {
     isShowPostIt.value = true
 }
 
-document.addEventListener("keydown", function (event) {
+document.addEventListener("keydown", async function (event) {
     if (event.code === "Escape" && (isShowDetail.value == true || isShowPostIt.value == true)) {
-        closeOvelay()
+        await closeOvelay()
     }
 })
 
@@ -267,9 +259,9 @@ const findBoardName = (selectedPage) => {
     return board.value[selectedPage]
 }
 
-const boardFromList = (selectboard) => {
+const boardFromList = async (selectboard) => {
     selected.value = board.value.indexOf(selectboard)
-    closeOvelay()
+    await closeOvelay()
 }
 </script>
  

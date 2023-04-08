@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import App from "./views/AppPage.vue";
+import Board from "./views/Board.vue";
 import Login from "./views/Login.vue";
 import CreateAccount from "./views/CreateAccount.vue"
 
@@ -11,8 +11,8 @@ const routes = [
   },
   {
     path: "/",
-    name: "App",
-    component: App
+    name: "Board",
+    component: Board
   },
   {
     path: "/register",

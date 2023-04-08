@@ -77,7 +77,7 @@ onUpdated(() => {
                               </div>
                   </div>
                   <!-- FILTER : DROP DOWN //FILTER BY TAG(S) -->
-                  <div class="dropdown dropdown-left btn btn-ghost btn-circle mr-1">
+                  <div class="dropdown dropdown-hover dropdown-bottom dropdown-end btn btn-ghost btn-circle mr-1">
                         <label tabindex="0">
                               <dropDownIcon/>
                         </label>

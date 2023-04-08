@@ -14,46 +14,11 @@
           "dueDate": "2023-04-01T00:00:00.000Z",
           "board": "Default board",
           "done": false
-        },
-        {
-          "id": "2023-04-08T04:14:04.737Z",
-          "topic": "asfsaf",
-          "tags": [],
-          "description": "",
-          "createdDate": "2023-04-08T04:14:04.737Z",
-          "dueDate": "2023-04-08T00:00:00.000Z",
-          "board": "1",
-          "done": false
-        },
-        {
-          "id": "2023-04-08T04:14:21.506Z",
-          "topic": "HUM",
-          "tags": [
-            "Done"
-          ],
-          "description": "",
-          "createdDate": "2023-04-08T04:14:21.506Z",
-          "dueDate": "2023-04-08T00:00:00.000Z",
-          "board": "1",
-          "done": true
-        },
-        {
-          "id": "2023-04-08T04:17:31.226Z",
-          "topic": "dsafsd",
-          "tags": [
-            "Done"
-          ],
-          "description": "",
-          "createdDate": "2023-04-08T04:17:31.226Z",
-          "dueDate": "2023-04-08T00:00:00.000Z",
-          "board": "sdfadf",
-          "done": true
         }
       ],
       "board": [
         "Default board",
-        "1",
-        "2"
+        "1"
       ]
     }
   ]

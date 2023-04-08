@@ -18,7 +18,7 @@
                         <div class="badge badge-outline bg-base-100" v-for="tag in card.tags">{{ tag }}</div>
                   </div>
                   <!-- DESCRIPTION -->
-                  <p class="m-1 font-semibold text-sm text-white overflow-clip"> Due date : {{ card.dueDate.toLocaleDateString("en-GB", {day:"2-digit", month: "2-digit", year: "numeric"}) }}</p>
+                  <p class="m-1 font-semibold text-sm text-white overflow-clip"> Due date : {{ card.dueDate }}</p>
                   <hr>
                   <p class="m-1 font-semibold text-white overflow-clip">{{ card.description }}</p>
             </div>
